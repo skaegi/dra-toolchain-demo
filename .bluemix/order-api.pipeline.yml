@@ -71,33 +71,6 @@ stages:
       cf push "${CF_APP_NAME}"
       # View logs
       #cf logs "${CF_APP_NAME}" --recent
-  - name: Sauce Labs Tests
-    type: tester
-    extension_id: ibm.devops.services.pipeline.saucelabs
-    services:
-      - ${SAUCE_LABS}
-    target:
-      region_id: ${QA_REGION_ID}
-      organization: ${QA_ORG_NAME}
-      space: ${QA_SPACE_NAME}
-    DL_ASSETS: 'false'
-    SELECT_CMD: custom
-    COMMAND: |-
-      #!/bin/bash
-      GRUNTFILE="tests/Gruntfile.js"
-      if [ -f $GRUNTFILE ]; then
-        npm install
-        echo $APP_URL | grep "stage1"
-        if [ $? -eq 0 ]; then
-          grunt test_fake --gruntfile $GRUNTFILE --base .
-        else
-          grunt test_real --gruntfile $GRUNTFILE --base .
-        fi
-      else
-        echo "$GRUNTFILE not found."
-      fi
-    enable_tests: true
-    test_file_pattern: '*.xml'
 - name: PROD
   inputs:
   - type: job
